@@ -1,0 +1,14 @@
+{
+  "watchName": "Example Watch",
+  "assetsPath": "path/to/assets",
+  "manifestPath": "path/to/manifest",
+  "configuratorPath": "path/to/configurator",
+  "r2Enabled": true,
+  "r2Credentials": {
+    "accountId": "your-account-id",
+    "accessKeyId": "your-access-key-id",
+    "secretAccessKey": "your-secret-access-key",
+    "bucketName": "your-bucket-name",
+    "domain": "your-domain"
+  }
+}
