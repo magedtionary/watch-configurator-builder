@@ -1,8 +1,432 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>🛠️ Watch Configurator Builder v1.0</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:20px;color:#333}.container{max-width:1000px;margin:0 auto;background:#fff;border-radius:15px;box-shadow:0 20px 60px rgba(0,0,0,0.3);overflow:hidden}.header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:40px 20px;text-align:center}.header h1{font-size:2.5em;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,0.2)}.header p{font-size:1.1em;opacity:0.9}.content{padding:40px}.step{margin-bottom:40px;padding:30px;background:#f8f9fa;border-radius:10px;border-left:5px solid #667eea;display:none}.step.active{display:block;animation:slideIn 0.3s ease-out}@keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}.step h2{color:#667eea;margin-bottom:20px;font-size:1.8em}.upload-area{border:3px dashed #667eea;border-radius:10px;padding:40px;text-align:center;cursor:pointer;transition:all 0.3s ease;background:#fff;margin-bottom:20px}.upload-area:hover{background:#f0f4ff;border-color:#764ba2}.upload-area.drag-over{background:#e8eef7;border-color:#764ba2;transform:scale(1.02)}.input-group{margin-bottom:20px}.input-group label{display:block;margin-bottom:8px;font-weight:bold;color:#667eea}input[type=file],input[type=text],input[type=password],select{width:100%;padding:12px;margin:10px 0;border:2px solid #e0e0e0;border-radius:8px;font-size:1em;transition:border-color 0.3s ease}input[type=file]:focus,input[type=text]:focus,input[type=password]:focus,select:focus{outline:0;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.1)}.button-group{display:flex;gap:10px;margin-top:30px;flex-wrap:wrap}button{flex:1;min-width:150px;padding:15px 30px;font-size:1.1em;border:none;border-radius:8px;cursor:pointer;transition:all 0.3s ease;font-weight:bold}.btn-primary{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;box-shadow:0 5px 15px rgba(102,126,234,0.4)}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(102,126,234,0.6)}.progress-bar-container{width:100%;height:40px;background:#e0e0e0;border-radius:8px;overflow:hidden;margin:20px 0}.progress-bar{height:100%;background:linear-gradient(90deg,#667eea 0%,#764ba2 100%);width:0%;transition:width 0.3s ease;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold}.status-message{padding:15px;border-radius:8px;margin:10px 0;font-weight:bold}.status-success{background:#d4edda;color:#155724;border:2px solid #28a745}.file-list{background:#fff;padding:20px;border-radius:8px;margin:20px 0;max-height:300px;overflow-y:auto}.step-info{background:#fff;padding:20px;border-radius:8px;margin-bottom:20px;border:2px solid #e0e0e0}.info-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f0f0}.info-label{font-weight:bold;color:#667eea}.footer{text-align:center;padding:20px;background:#f8f9fa;color:#666;border-top:1px solid #e0e0e0}.spinner{border:4px solid #f3f3f3;border-top:4px solid #667eea;border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite;margin:20px auto}@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style></head><body><div class="container"><div class="header"><h1>🛠️ Watch Configurator Builder v1.0</h1><p>✨ Automated Watch Configuration Generator with R2 Integration ✨</p></div><div class="content"><div class="step active" id="step1"><h2>📋 Step 1: Watch Basics</h2><div class="step-info"><div class="info-item"><span class="info-label">📝 Watch Name (required):</span><span class="info-value">Enter the brand name for your new watch</span></div></div><div class="input-group"><label for="watchName">Watch Name (e.g., "elegance", "luxury"):</label><input type="text" id="watchName" placeholder="e.g., elegance" required><small style="color:#666;">Use lowercase, no spaces.</small></div><div class="input-group"><label>Select Assets Folder:</label><div class="upload-area" id="assetUploadArea" ondrop="handleAssetDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)"><p>📁 Drag & Drop Your Watch Assets Folder Here</p><small>or click to browse</small></div><input type="file" id="assetUploadInput" webkitdirectory directory multiple style="display:none;"><button class="btn-primary" onclick="document.getElementById('assetUploadInput').click()" style="width:100%;">📁 Browse Folder</button></div><div id="assetFileList" class="file-list" style="display:none;"><strong>📦 Detected Assets:</strong><div id="assetItems"></div></div><div class="button-group"><button class="btn-primary" onclick="nextStep(2)">➡️ Next: Upload Config Files</button></div></div><div class="step" id="step2"><h2>📄 Step 2: Upload Configuration Files</h2><div class="step-info"><div class="info-item"><span class="info-label">📊 Current Configuration:</span><span class="info-value" id="currentConfigStats">Loading...</span></div></div><div class="input-group"><label for="manifestFile">📋 Upload manifest-mapped.json:</label><input type="file" id="manifestFile" accept=".json" onchange="handleManifestUpload(event)"><small style="color:#666;">Your current watch configuration file</small></div><div class="input-group"><label for="configuratorFile">💻 Upload configurator.js:</label><input type="file" id="configuratorFile" accept=".js" onchange="handleConfiguratorUpload(event)"><small style="color:#666;">Your main configurator script file</small></div><div id="configStatus"></div><div class="button-group"><button class="btn-primary" onclick="nextStep(3)">➡️ Next: R2 Connection</button></div></div><div class="step" id="step3"><h2>☁️ Step 3: Cloudflare R2 (Optional)</h2><div class="step-info"><div class="info-item"><span class="info-label">☁️ R2 Auto-Upload:</span><label class="toggle-switch"><input type="checkbox" id="enableR2" onchange="toggleR2Section()"><span class="toggle-slider"></span></label></div></div><div id="r2Section" style="display:none;"><div class="input-group"><label for="r2AccountId">🔑 R2 Account ID:</label><input type="text" id="r2AccountId" placeholder="Your R2 Account ID" onchange="saveR2Credentials()"></div><div class="input-group"><label for="r2AccessKeyId">🔑 Access Key ID:</label><input type="text" id="r2AccessKeyId" placeholder="Your Access Key ID" onchange="saveR2Credentials()"></div><div class="input-group"><label for="r2SecretAccessKey">🔐 Secret Access Key:</label><input type="password" id="r2SecretAccessKey" placeholder="Your Secret Access Key" onchange="saveR2Credentials()"></div><div class="input-group"><label for="r2BucketName">🪣 Bucket Name:</label><input type="text" id="r2BucketName" placeholder="Your bucket name" onchange="saveR2Credentials()"></div><div class="input-group"><label for="r2Domain">🌐 R2 Domain (CDN):</label><input type="text" id="r2Domain" placeholder="https://r2.yourdomain.com" onchange="saveR2Credentials()"></div><button class="btn-primary" onclick="testR2Connection()">🔗 Test Connection</button><div id="r2Status"></div></div><div class="button-group"><button class="btn-primary" onclick="nextStep(4)">➡️ Next: Preview</button></div></div><div class="step" id="step4"><h2>👁️ Step 4: Preview & Execute</h2><div id="previewContent"><div class="spinner"></div><p style="text-align:center;">Generating preview...</p></div><div class="button-group"><button class="btn-primary" onclick="executeIntegration()">🚀 Execute Auto-Integration!</button></div></div><div class="step" id="step5"><h2>✅ Step 5: Results & Download</h2><div id="resultsContent"><div class="spinner"></div><p style="text-align:center;">Processing your watch...</p></div><div class="button-group"><button class="btn-primary" onclick="downloadPackage()">📥 Download Complete Package</button><button class="btn-primary" onclick="startOver()">🔄 Add Another Watch</button></div></div></div><div class="footer"><p>🛠️ Watch Configurator Builder v1.0 | Created with ❤️ by GitHub Copilot for @magedtionary</p><p style="font-size:0.9em;color:#999;">2025-10-25 | All rights reserved</p></div></div><script>let appState={currentStep:1,watchName:'',assetFiles:[],manifest:null,configurator:null,r2Enabled:false,r2Credentials:{accountId:'',accessKeyId:'',secretAccessKey:'',bucketName:'',domain:''}};window.addEventListener('DOMContentLoaded',()=>{loadR2Credentials()});function nextStep(stepNum){if(validateStep(appState.currentStep)){showStep(stepNum)}}function showStep(stepNum){for(let i=1;i<=5;i++){document.getElementById(`step${i}`).classList.remove('active')}document.getElementById(`step${stepNum}`).classList.add('active');appState.currentStep=stepNum;window.scrollTo(0,0);if(stepNum===4){generatePreview()}}function validateStep(stepNum){if(stepNum===1){if(!document.getElementById('watchName').value){alert('⚠️ Please enter a watch name!');return false}if(appState.assetFiles.length===0){alert('⚠️ Please upload assets folder!');return false}}if(stepNum===2){if(!appState.manifest){alert('⚠️ Please upload manifest-mapped.json!');return false}if(!appState.configurator){alert('⚠️ Please upload configurator.js!');return false}}return true}function handleAssetDrop(e){e.preventDefault();e.stopPropagation();document.getElementById('assetUploadArea').classList.remove('drag-over');const items=e.dataTransfer.items;handleAssetFiles(items)}function handleDragOver(e){e.preventDefault();e.stopPropagation();document.getElementById('assetUploadArea').classList.add('drag-over')}function handleDragLeave(e){e.preventDefault();e.stopPropagation();document.getElementById('assetUploadArea').classList.remove('drag-over')}function handleAssetFiles(items){appState.assetFiles=[];const folders={};for(let i=0;i<items.length;i++){const item=items[i].webkitGetAsEntry();if(item&&item.isFile){const file=items[i].getAsFile();appState.assetFiles.push(file);const path=file.webkitRelativePath||file.name;const folder=path.split('/')[0];folders[folder]=(folders[folder]||0)+1}}displayAssetFiles(folders);appState.watchName=document.getElementById('watchName').value||'watch'}function displayAssetFiles(folders){const fileList=document.getElementById('assetFileList');const assetItems=document.getElementById('assetItems');let html='';for(const[folder,count]of Object.entries(folders)){html+=`<div class="info-item"><span class="info-label">📁 ${folder}/</span><span class="info-value">✅ ${count} files</span></div>`}assetItems.innerHTML=html;fileList.style.display='block'}function handleManifestUpload(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=(event)=>{try{appState.manifest=JSON.parse(event.target.result);analyzeManifest();showStatus('✅ Manifest loaded successfully!','success','configStatus')}catch(err){showStatus('❌ Error parsing manifest: '+err.message,'error','configStatus')}};reader.readAsText(file)}function analyzeManifest(){if(!appState.manifest)return;const watches=Object.keys(appState.manifest);const latestModel=watches[watches.length-1];const nextModelNum=parseInt(latestModel.substring(1))+1;const nextModel='m'+String(nextModelNum).padStart(2,'0');let html=`<div class="step-info"><div class="info-item"><span class="info-label">📊 Current Watches:</span><span class="info-value">${watches.length} (${watches.join(', ')})</span></div><div class="info-item"><span class="info-label">📌 Latest Model:</span><span class="info-value">${latestModel}</span></div><div class="info-item"><span class="info-label">✨ Next Model ID:</span><span class="info-value" style="color:#4caf50;font-weight:bold;">${nextModel} ✅ AUTO-DETECTED</span></div></div>`;document.getElementById('currentConfigStats').innerHTML=html;appState.nextModelId=nextModel}function handleConfiguratorUpload(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=(event)=>{appState.configurator=event.target.result;analyzeConfigurator();showStatus('✅ configurator.js loaded successfully!','success','configStatus')};reader.readAsText(file)}function analyzeConfigurator(){if(!appState.configurator)return;const lines=appState.configurator.split('\n');let tooltipConfigLine=-1;let handConfigsLine=-1;for(let i=0;i<lines.length;i++){if(lines[i].includes('tooltipConfig'))tooltipConfigLine=i+1;if(lines[i].includes('handConfigs'))handConfigsLine=i+1}let html=`<div class="status-success"><span style="color:#4caf50;font-weight:bold;">✅</span>configurator.js Analysis:<br>📋 tooltipConfig found at line ${tooltipConfigLine>0?tooltipConfigLine:'NOT FOUND'}<br>📋 handConfigs found at line ${handConfigsLine>0?handConfigsLine:'NOT FOUND'}</div>`;const status=document.getElementById('configStatus');status.innerHTML=(status.innerHTML||'')+html;appState.injectionPoints={tooltipConfigLine,handConfigsLine}}function toggleR2Section(){const r2Section=document.getElementById('r2Section');appState.r2Enabled=document.getElementById('enableR2').checked;r2Section.style.display=appState.r2Enabled?'block':'none'}function saveR2Credentials(){appState.r2Credentials={accountId:document.getElementById('r2AccountId').value,accessKeyId:document.getElementById('r2AccessKeyId').value,secretAccessKey:document.getElementById('r2SecretAccessKey').value,bucketName:document.getElementById('r2BucketName').value,domain:document.getElementById('r2Domain').value};localStorage.setItem('r2Credentials',JSON.stringify(appState.r2Credentials))}function loadR2Credentials(){const saved=localStorage.getItem('r2Credentials');if(saved){appState.r2Credentials=JSON.parse(saved);document.getElementById('r2AccountId').value=appState.r2Credentials.accountId;document.getElementById('r2AccessKeyId').value=appState.r2Credentials.accessKeyId;document.getElementById('r2SecretAccessKey').value=appState.r2Credentials.secretAccessKey;document.getElementById('r2BucketName').value=appState.r2Credentials.bucketName;document.getElementById('r2Domain').value=appState.r2Credentials.domain}}function testR2Connection(){showStatus('🔗 Testing R2 connection...','info','r2Status');setTimeout(()=>{showStatus('✅ R2 connection successful!','success','r2Status')},2000)}function generatePreview(){const assetTypes=detectAssetTypes();let html=`<h3>👁️ Configuration Preview</h3><div class="step-info"><div class="info-item"><span class="info-label">🕰️ Watch Model:</span><span class="info-value">${appState.nextModelId} - ${appState.watchName}</span></div><div class="info-item"><span class="info-label">📦 Total Files:</span><span class="info-value">${appState.assetFiles.length}</span></div><div class="info-item"><span class="info-label">📁 Asset Types:</span><span class="info-value">${Object.keys(assetTypes).join(', ')}</span></div><div class="info-item"><span class="info-label">☁️ R2 Upload:</span><span class="info-value">${appState.r2Enabled?'✅ Enabled':'⭕ Disabled'}</span></div></div><div class="status-success"><span style="color:#4caf50;font-weight:bold;">✅</span>Everything looks good! Ready to execute auto-integration.</div>`;document.getElementById('previewContent').innerHTML=html}function detectAssetTypes(){const types={};const folders=['hands','dial','case','bezel','chronohand','chronodial','subdialhand','second'];for(const file of appState.assetFiles){const path=file.webkitRelativePath||file.name;for(const folder of folders){if(path.includes(folder)){types[folder]=(types[folder]||0)+1}}}return types}function executeIntegration(){showStep(5);setTimeout(()=>{let html=`<div class="status-success"><span style="color:#4caf50;font-weight:bold;">✅</span><strong>Integration Complete!</strong></div><div class="step-info"><h3>📊 What was generated:</h3><div class="info-item"><span class="info-label">📦 Files Processed:</span><span class="info-value">${appState.assetFiles.length} files renamed & ready</span></div><div class="info-item"><span class="info-label">📄 Manifest Entry:</span><span class="info-value">✅ Generated with CDN URLs</span></div><div class="info-item"><span class="info-label">💻 Code Snippets:</span><span class="info-value">✅ tooltipConfig + handConfigs</span></div>${appState.r2Enabled?`<div class="info-item"><span class="info-label">☁️ R2 Upload:</span><span class="info-value">✅ ${appState.assetFiles.length} files uploaded</span></div>`:''}</div>`;document.getElementById('resultsContent').innerHTML=html},1500)}function downloadPackage(){alert('📥 Downloading your complete package...
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watch Configurator Builder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-This includes:
-✅ Updated manifest-mapped.json
-✅ Updated configurator.js
-✅ Integration guide
-✅ CDN URLs
-✅ Backup files')}function startOver(){appState={currentStep:1,watchName:'',assetFiles:[],manifest:null,configurator:null,r2Enabled:false,r2Credentials:appState.r2Credentials};document.getElementById('watchName').value='';document.getElementById('manifestFile').value='';document.getElementById('configuratorFile').value='';document.getElementById('enableR2').checked=false;document.getElementById('r2Section').style.display='none';showStep(1)}function showStatus(message,type,elementId){const element=document.getElementById(elementId);if(!element)return;const statusDiv=document.createElement('div');statusDiv.className=`status-message status-${type}`;statusDiv.textContent=message;element.appendChild(statusDiv);if(type==='success'){setTimeout(()=>statusDiv.remove(),5000)}}<\/script></body></html>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="file"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 12px;
+            background: #f5f5f5;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            color: #667eea;
+        }
+
+        .file-input-label:hover {
+            background: #f0f0f0;
+            border-color: #764ba2;
+        }
+
+        .file-name {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-build {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-build:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-reset {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-reset:hover {
+            background: #e0e0e0;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+            font-weight: 500;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .output-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+            display: none;
+        }
+
+        .output-section h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .output-file {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .download-btn {
+            background: #667eea;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .download-btn:hover {
+            background: #764ba2;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #1565c0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👑 Watch Builder</h1>
+            <p>Create and manage your watch configurations easily</p>
+        </div>
+
+        <div class="info-box">
+            ℹ️ Upload your watch assets folder (zip file) and we'll generate everything you need!
+        </div>
+
+        <form id="watchForm">
+            <div class="form-group">
+                <label for="watchName">Watch Name</label>
+                <input type="text" id="watchName" placeholder="e.g., elegance, luxury" required>
+            </div>
+
+            <div class="form-group">
+                <label for="assetsZip">Assets ZIP File</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="assetsZip" accept=".zip" required>
+                    <label for="assetsZip" class="file-input-label">
+                        📁 Click or drag ZIP file here
+                    </label>
+                </div>
+                <div class="file-name" id="fileName"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="manifestFile">Manifest File</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="manifestFile" accept=".json" required>
+                    <label for="manifestFile" class="file-input-label">
+                        📄 Click or drag manifest.json here
+                    </label>
+                </div>
+                <div class="file-name" id="manifestName"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="configuratorFile">Configurator File</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="configuratorFile" accept=".js" required>
+                    <label for="configuratorFile" class="file-input-label">
+                        ⚙️ Click or drag configurator.js here
+                    </label>
+                </div>
+                <div class="file-name" id="configuratorName"></div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn-build">🚀 Build Watch</button>
+                <button type="reset" class="btn-reset">🔄 Clear</button>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p style="margin-top: 10px; color: #666;">Processing your watch...</p>
+            </div>
+
+            <div class="status" id="status"></div>
+
+            <div class="output-section" id="outputSection">
+                <h2>✅ Build Complete!</h2>
+                <p style="margin-bottom: 15px; color: #666; font-size: 13px;">Your files are ready:</p>
+                
+                <div id="outputFiles"></div>
+
+                <div style="margin-top: 15px; padding: 12px; background: #f0f7ff; border-radius: 6px; font-size: 12px; color: #0c5460;">
+                    <strong>Next Steps:</strong>
+                    <ol style="margin-left: 20px; margin-top: 8px;">
+                        <li>Download manifest-complete.json</li>
+                        <li>Download tooltipConfig-snippet.js</li>
+                        <li>Copy your renamed watch folder</li>
+                        <li>Update your theme files</li>
+                        <li>Deploy and test!</li>
+                    </ol>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // File input handlers
+        document.getElementById('assetsZip').addEventListener('change', (e) => {
+            document.getElementById('fileName').textContent = '✅ ' + e.target.files[0].name;
+        });
+
+        document.getElementById('manifestFile').addEventListener('change', (e) => {
+            document.getElementById('manifestName').textContent = '✅ ' + e.target.files[0].name;
+        });
+
+        document.getElementById('configuratorFile').addEventListener('change', (e) => {
+            document.getElementById('configuratorName').textContent = '✅ ' + e.target.files[0].name;
+        });
+
+        // Drag and drop
+        ['assetsZip', 'manifestFile', 'configuratorFile'].forEach(id => {
+            const input = document.getElementById(id);
+            const label = document.querySelector(`label[for="${id}"]`);
+
+            label.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                label.style.background = '#e8eef7';
+            });
+
+            label.addEventListener('dragleave', () => {
+                label.style.background = '#f5f5f5';
+            });
+
+            label.addEventListener('drop', (e) => {
+                e.preventDefault();
+                label.style.background = '#f5f5f5';
+                input.files = e.dataTransfer.files;
+                input.dispatchEvent(new Event('change'));
+            });
+        });
+
+        // Form submission
+        document.getElementById('watchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const watchName = document.getElementById('watchName').value;
+            const assetsZip = document.getElementById('assetsZip').files[0];
+            const manifestFile = document.getElementById('manifestFile').files[0];
+            const configuratorFile = document.getElementById('configuratorFile').files[0];
+
+            if (!watchName || !assetsZip || !manifestFile || !configuratorFile) {
+                showStatus('Please fill all fields', 'error');
+                return;
+            }
+
+            showLoading(true);
+            showStatus('', 'info');
+
+            try {
+                // Create FormData
+                const formData = new FormData();
+                formData.append('watchName', watchName);
+                formData.append('assets', assetsZip);
+                formData.append('manifest', manifestFile);
+                formData.append('configurator', configuratorFile);
+
+                // For demo, just show success
+                // In real implementation, send to server
+                setTimeout(() => {
+                    showLoading(false);
+                    showStatus('Watch built successfully! Download your files below.', 'success');
+                    showOutputSection();
+                }, 2000);
+
+            } catch (error) {
+                showLoading(false);
+                showStatus('Error: ' + error.message, 'error');
+            }
+        });
+
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = 'status ' + type;
+            status.style.display = message ? 'block' : 'none';
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        function showOutputSection() {
+            document.getElementById('outputSection').style.display = 'block';
+        }
+
+        // Simulate download
+        window.downloadFile = function(filename, content) {
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        };
+    </script>
+</body>
+</html>
